@@ -1,0 +1,17 @@
+{
+  // Tell VS Code to use the virtual environment inside this folder.
+  // (After running the "Setup" task once, the Python extension will pick this up automatically.)
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true,
+
+  // Hide noise so the file tree stays readable.
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true
+  },
+
+  // Nicer editing defaults.
+  "editor.formatOnSave": false,
+  "editor.rulers": [120],
+  "python.analysis.typeCheckingMode": "off"
+}

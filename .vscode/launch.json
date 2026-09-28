@@ -1,0 +1,47 @@
+{
+  // Press F5 (or Run ▶ Start Debugging) and pick one of these.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Normal development: server restarts itself every time you save a file.
+      "name": "▶ Run API (auto-reload)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      // Use this one when you want breakpoints to work (click left of a line number to add one).
+      "name": "🐞 Debug API (breakpoints work)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--host", "0.0.0.0", "--port", "8000"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      // Wipes the database and fills it with demo data (machines, orders, users...).
+      "name": "🌱 Seed demo data",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/seed.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      // Runs all 69 end-to-end checks. Run "Seed" first.
+      "name": "✅ Run smoke tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/smoke_test.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+# --- Virtual Environments (Heavy local packages) ---
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Python Compiled Bytecode & Caches ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# --- Secrets & Credentials (NEVER push these) ---
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# --- Node / Frontend Artifacts (if any node tools are used) ---
+node_modules/
+dist/
+build/
+npm-debug.log*
+
+# --- Operating System & Windows Temp Files ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.tmp
+*.temp
+.DS_Store
+
+# --- VS Code & IDE settings ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/

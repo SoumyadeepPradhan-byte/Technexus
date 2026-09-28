@@ -1,0 +1,103 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  requests.http  –  click "Send Request" above any ### block (REST Client extension).
+#  Start with "1. Login"; every later request reuses the token. Server must be running.
+# ─────────────────────────────────────────────────────────────────────────────
+@base = http://localhost:8000/api/v1
+
+### 1. Login as the ASHA health worker (Kalahandi). Try 9000000040 (doctor), 9000000030 (patient), 9000000020 (pharmacist)
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "phone_or_email": "9000000010", "password": "1234" }
+
+###
+@token = {{login.response.body.access_token}}
+
+### 2. Who am I?
+GET {{base}}/auth/me
+Authorization: Bearer {{token}}
+
+### 3. How does the AI read symptoms typed in Hinglish? (no login needed)
+GET {{base}}/triage/understand?text=bukhar aur khansi 3 din se
+
+### 4. …and in Odia script
+GET {{base}}/triage/understand?text=ଛାତି ବିନ୍ଧା, ଶ୍ୱାସ କଷ୍ଟ
+
+### 5. AI symptom checker – fever + cough 4 days, auto-book best doctor, phone is on 120 kbps
+POST {{base}}/triage
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "symptoms": "bukhar aur khansi", "duration_days": 4, "patient_id": 2, "auto_book": true, "network_kbps": 120 }
+
+### 6. AI symptom checker – chest pain in Odia → EMERGENCY (escalated, NOT booked)
+POST {{base}}/triage
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "symptoms": "ଛାତି ବିନ୍ଧା, ଶ୍ୱାସ କଷ୍ଟ", "patient_id": 3, "auto_book": true }
+
+### 7. Which doctors can take an Odia-speaking child right now? (AI ranked)
+GET {{base}}/doctors/available?specialty=pediatrics&language=or&region_id=1
+Authorization: Bearer {{token}}
+
+### 8. Video, audio or text? The app measures its network and asks
+GET {{base}}/network/recommend-mode?kbps=120&latency_ms=400
+
+### 9. Which nearby pharmacies have Paracetamol right now?
+GET {{base}}/pharmacy/availability/1?region_id=1
+Authorization: Bearer {{token}}
+
+### 10. Search medicines in Hindi
+GET {{base}}/pharmacy/medicines?q=पैरासिटामोल
+
+### 11. Patient's whole file in one response (cache it offline)
+GET {{base}}/patients/1/bundle
+Authorization: Bearer {{token}}
+
+### 12. OFFLINE SYNC – push 2 patients + a triage done with no signal
+POST {{base}}/sync/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "device_id": "asha-phone-1",
+  "records": [
+    { "type": "patient", "client_id": "uuid-100", "updated_at": "2026-09-27T09:00:00",
+      "data": { "name": "Sunita Majhi", "age": 29, "sex": "F", "phone": "9000000101", "village": "Thuamul Rampur", "region_id": 1, "language": "or", "is_pregnant": true } },
+    { "type": "triage", "client_id": "uuid-101", "updated_at": "2026-09-27T09:05:00",
+      "data": { "patient_client_id": "uuid-100", "symptoms": "ଜ୍ୱର", "duration_days": 2 } }
+  ]
+}
+
+### 13. OFFLINE SYNC – pull only what changed since last sync
+POST {{base}}/sync/pull
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "device_id": "asha-phone-1", "region_id": 1, "since": "2026-09-27T00:00:00" }
+
+### 14. SMS/IVR messages the villager's phone would receive
+GET {{base}}/notifications?phone=9800000001
+Authorization: Bearer {{token}}
+
+### 15. Measurable impact – trips avoided, ₹ saved, per district
+GET {{base}}/analytics/impact
+Authorization: Bearer {{token}}
+
+### 16. ⭐ THE DEMO – whole patient journey in one call
+POST {{base}}/demo/patient-journey
+Authorization: Bearer {{token}}
+
+### 17. ⭐ Emergency path
+POST {{base}}/demo/emergency
+Authorization: Bearer {{token}}
+
+### 18. ⭐ Offline sync demo
+POST {{base}}/demo/offline-sync
+Authorization: Bearer {{token}}
+
+### 19. Everything the system did automatically (show to judges)
+GET {{base}}/events?limit=30
+Authorization: Bearer {{token}}

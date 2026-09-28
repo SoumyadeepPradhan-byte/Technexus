@@ -1,0 +1,46 @@
+{
+  // Terminal ▸ Run Task... ▸ pick one.  (Ctrl+Shift+P → "Run Task" also works)
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "1) Setup (first time only)",
+      "detail": "Creates .venv, installs requirements, creates .env",
+      "type": "shell",
+      "windows": {
+        "command": "python -m venv .venv; .\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt; if (!(Test-Path .env)) { Copy-Item .env.example .env }; Write-Host '`nSetup done. Now run task 2) Seed demo data.' -ForegroundColor Green"
+      },
+      "linux": { "command": "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && cp -n .env.example .env; echo 'Setup done.'" },
+      "osx":   { "command": "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && cp -n .env.example .env; echo 'Setup done.'" },
+      "problemMatcher": []
+    },
+    {
+      "label": "2) Seed demo data",
+      "detail": "Wipes telehealth.db and fills it with demo users, doctors, patients, pharmacies, medicines...",
+      "type": "shell",
+      "windows": { "command": ".\\.venv\\Scripts\\python.exe seed.py" },
+      "linux":   { "command": ".venv/bin/python seed.py" },
+      "osx":     { "command": ".venv/bin/python seed.py" },
+      "problemMatcher": []
+    },
+    {
+      "label": "3) Start API server",
+      "detail": "Starts uvicorn on http://localhost:8000 (Swagger at /docs)",
+      "type": "shell",
+      "windows": { "command": ".\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000" },
+      "linux":   { "command": ".venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000" },
+      "osx":     { "command": ".venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "4) Run tests",
+      "detail": "Seeds fresh data, then runs the 69 end-to-end checks",
+      "type": "shell",
+      "windows": { "command": ".\\.venv\\Scripts\\python.exe seed.py; .\\.venv\\Scripts\\python.exe smoke_test.py" },
+      "linux":   { "command": ".venv/bin/python seed.py && .venv/bin/python smoke_test.py" },
+      "osx":     { "command": ".venv/bin/python seed.py && .venv/bin/python smoke_test.py" },
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    }
+  ]
+}

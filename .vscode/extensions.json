@@ -1,0 +1,9 @@
+{
+  // VS Code will offer to install these when you open the folder. Say yes.
+  "recommendations": [
+    "ms-python.python",          // run/debug Python
+    "ms-python.vscode-pylance",  // autocomplete + error squiggles
+    "humao.rest-client",         // lets you click "Send Request" inside requests.http
+    "qwtel.sqlite-viewer"        // double-click telehealth.db to look inside the database
+  ]
+}
