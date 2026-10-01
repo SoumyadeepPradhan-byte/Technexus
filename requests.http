@@ -101,3 +101,107 @@ Authorization: Bearer {{token}}
 ### 19. Everything the system did automatically (show to judges)
 GET {{base}}/events?limit=30
 Authorization: Bearer {{token}}
+
+### 20. AI Service Health & Diagnostics
+# Checks active LLM provider (OpenAI, Anthropic, Gemini, or clinical fallback), active model, and engine readiness.
+# Expected Output: {"status":"ok","configured_provider":"fallback","model":"clinical_rules_engine_v1","fallback_engine_ready":true}
+GET {{base}}/ai/status
+
+### 21. AI Symptom Triage – Hinglish symptoms with vitals
+# Health worker or patient inputs symptoms in Hindi/Hinglish with vitals. AI evaluates urgency, differential, reasoning, and home care.
+# Expected Output: {"urgency":"urgent","escalation_required":false,"recommended_specialty":"general_medicine","model_name":"clinical_rules_engine_v1","fallback_used":true}
+POST {{base}}/ai/triage
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "symptoms": "bukhar aur tez khansi 3 din se",
+  "age": 32,
+  "sex": "M",
+  "duration_days": 3,
+  "spo2": 97,
+  "temperature_c": 38.4,
+  "bp_systolic": 120,
+  "bp_diastolic": 80,
+  "pulse": 84,
+  "language": "hi"
+}
+
+### 22. AI Symptom Triage – Emergency chest pain with hard guardrails
+# Emergency red flags (chest pain, breathlessness) trigger immediate escalation to hospital / 108 ambulance.
+# Expected Output: {"urgency":"emergency","escalation_required":true,"recommended_specialty":"emergency","model_name":"clinical_rules_engine_v1","fallback_used":true}
+POST {{base}}/ai/triage
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "symptoms": "seene me tez dard aur sans lene me dikkat",
+  "age": 58,
+  "sex": "M",
+  "duration_days": 1,
+  "spo2": 88,
+  "language": "hi"
+}
+
+### 23. AI Patient Summary – Fetch and synthesize from database (Patient #1)
+# Synthesizes records, vitals history, and active prescriptions into a unified EHR clinical summary.
+# Expected Output: {"patient_id":1,"patient_name":"Laxmi Nayak","risk_level":"low","model_name":"deterministic_clinical_summary","fallback_used":true}
+POST {{base}}/ai/patient-summary
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "focus": "clinical_overview",
+  "language": "en"
+}
+
+### 24. AI Patient Summary – Custom external clinical payload
+# Generates summary for patient records without querying database.
+# Expected Output: {"patient_name":"Suresh Chandra","risk_level":"high","model_name":"deterministic_clinical_summary","fallback_used":true}
+POST {{base}}/ai/patient-summary
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "patient_name": "Suresh Chandra",
+  "age": 62,
+  "sex": "M",
+  "chronic_conditions": "Type 2 Diabetes, Hypertension",
+  "allergies": "Sulfa drugs",
+  "recent_vitals": {
+    "bp_systolic": 152,
+    "bp_diastolic": 94,
+    "spo2": 96,
+    "temperature_c": 37.0
+  },
+  "recent_prescriptions": [
+    "Metformin 500 mg 1-0-1",
+    "Amlodipine 5 mg 1-0-0"
+  ],
+  "focus": "handover",
+  "language": "en"
+}
+
+### 25. AI Doctor Note Drafting – Generate SOAP Note & E-Prescriptions
+# Used by doctors or health workers to draft standard SOAP documentation and formulary prescriptions.
+# Expected Output: {"chief_complaint":"Acute productive cough...","e_prescription_ready":true,"model_name":"deterministic_soap_engine","fallback_used":true}
+POST {{base}}/ai/doctor-notes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "chief_complaint": "Acute productive cough and intermittent high fever for 4 days",
+  "duration": "4 days",
+  "symptoms_and_history": "Patient notes yellow sputum, mild breathlessness on exertion, chills in evening. No chest pain.",
+  "vitals": {
+    "bp": "124/82",
+    "pulse": 88,
+    "spo2": 96,
+    "temp_c": 38.6
+  },
+  "physical_examination": "Throat congested with mild pharyngeal injection. Bilateral vesicular breath sounds with scattered rhonchi.",
+  "raw_dictation_or_notes": "Likely viral tracheobronchitis with mild secondary bronchospasm. Advised steam, paracetamol, hydration.",
+  "clinical_impression": "Acute Tracheobronchitis with Pyrexia",
+  "language": "en"
+}

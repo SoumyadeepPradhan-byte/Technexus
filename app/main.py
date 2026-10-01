@@ -16,7 +16,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from app.core.config import settings
 from app.core.database import Base, engine
 import app.models  # noqa: F401  ← registers every table so create_all() knows about them
-from app.routers import analytics, appointments, auth, core, demo, doctors, patients, pharmacy, sync, triage
+from app.routers import ai, analytics, appointments, auth, core, demo, doctors, patients, pharmacy, sync, triage
 
 Base.metadata.create_all(bind=engine)
 
@@ -27,14 +27,14 @@ app = FastAPI(
         "Telehealth Bridge for Underserved Rural Areas - multilingual, low-bandwidth, offline-first.\n\n"
         "Modules: Auth · Patients & offline health records · Doctors & availability · Appointments & "
         "bandwidth-aware consultations · Pharmacy medicine availability · AI symptom checker (triage) · "
-        "Offline sync · Impact analytics.\n\n"
+        "Offline sync · Impact analytics · AI Workflows.\n\n"
         "**Login:** click *Authorize*, username = phone number. Seeded users all use password `1234`."
     ),
 )
 app.add_middleware(GZipMiddleware, minimum_size=settings.GZIP_MIN_BYTES)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
-for r in (auth, core, patients, doctors, appointments, pharmacy, triage, sync, analytics, demo):
+for r in (auth, core, patients, doctors, appointments, pharmacy, triage, sync, analytics, demo, ai):
     app.include_router(r.router, prefix=settings.API_PREFIX)
 
 
