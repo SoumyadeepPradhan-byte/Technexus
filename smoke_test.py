@@ -181,4 +181,19 @@ o = c.post(f"{B}/demo/offline-sync", headers=asha).json()
 check("demo offline sync: 4 records accepted", o["accepted"] == 4)
 check("event audit trail", len(c.get(f"{B}/events", headers=admin, params={"limit": 200}).json()) > 20)
 
+# --- AI Workflows
+check("AI status endpoint reports ok", c.get(f"{B}/ai/status").status_code == 200 and c.get(f"{B}/ai/status").json()["status"] == "ok")
+
+ai_t = c.post(f"{B}/ai/triage", headers=asha, json={"symptoms": "bukhar aur khansi", "duration_days": 3, "spo2": 97, "temperature_c": 38.5, "language": "hi"}).json()
+check("AI triage returns structured urgency and differentials", ai_t["urgency"] == "urgent" and len(ai_t["potential_conditions"]) > 0 and len(ai_t["home_care_instructions"]) > 0)
+
+ai_e = c.post(f"{B}/ai/triage", headers=asha, json={"symptoms": "seene me tez dard aur sans lene me dikkat", "spo2": 88, "language": "hi"}).json()
+check("AI triage emergency guardrail triggers for chest pain", ai_e["urgency"] == "emergency" and ai_e["escalation_required"] is True and len(ai_e["red_flags"]) >= 2)
+
+ai_s = c.post(f"{B}/ai/patient-summary", headers=asha, json={"patient_id": 1, "language": "en"}).json()
+check("AI patient summary synthesizes EHR records and medications", ai_s["patient_id"] == 1 and len(ai_s["current_medications"]) >= 1 and bool(ai_s["summary_narrative"]))
+
+ai_n = c.post(f"{B}/ai/doctor-notes", headers=doc, json={"chief_complaint": "Acute productive cough and high fever for 4 days", "duration": "4 days", "vitals": {"bp": "120/80", "temp_c": 38.5}, "language": "en"}).json()
+check("AI doctor notes drafts SOAP note with prescriptions", bool(ai_n["soap_note"]["subjective"]) and len(ai_n["suggested_prescriptions"]) >= 1 and bool(ai_n["patient_instructions"]))
+
 print(f"\n{ok} passed, {fail} failed")

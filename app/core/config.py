@@ -23,7 +23,12 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200       # 30 days - rural users can't re-login every day
 
-    ANTHROPIC_API_KEY: str = ""                    # optional: LLM translation + richer triage advice
+    ANTHROPIC_API_KEY: str = ""                    # optional: Anthropic Claude API key
+    OPENAI_API_KEY: str = ""                       # optional: OpenAI / compatible API key
+    OPENAI_BASE_URL: str = ""                      # optional: custom base URL for OpenAI-compatible LLM endpoints
+    GEMINI_API_KEY: str = ""                       # optional: Google Gemini API key
+    LLM_MODEL: str = "gpt-4o-mini"                 # default model name
+    LLM_TIMEOUT_SECONDS: int = 15                  # timeout safety in seconds for external LLM calls
 
     # ---- Rules the problem statement cares about ----
     SUPPORTED_LANGUAGES: str = "en,hi,or"          # English, Hindi, Odia (add te, ta, bn... in .env)

@@ -383,3 +383,29 @@ class EventOut(ORM):
     event: str
     detail: str
     created_at: datetime
+
+
+# ---------- AI Workflows ----------
+from app.schemas.ai import (  # noqa: F401
+    AIDoctorNoteDraftRequest as AIDoctorNoteDraftRequest,
+    AIDoctorNoteDraftResponse as AIDoctorNoteDraftResponse,
+    AIHealthStatusOut as AIHealthStatusOut,
+    AIMedicalTriageRequest as AIMedicalTriageRequest,
+    AIMedicalTriageResponse as AIMedicalTriageResponse,
+    AIPatientSummaryRequest as AIPatientSummaryRequest,
+    AIPatientSummaryResponse as AIPatientSummaryResponse,
+    AIPrescriptionSuggestion as AIPrescriptionSuggestion,
+    SOAPNote as SOAPNote,
+)
+
+__all__ = [
+    "AIDoctorNoteDraftRequest",
+    "AIDoctorNoteDraftResponse",
+    "AIHealthStatusOut",
+    "AIMedicalTriageRequest",
+    "AIMedicalTriageResponse",
+    "AIPatientSummaryRequest",
+    "AIPatientSummaryResponse",
+    "AIPrescriptionSuggestion",
+    "SOAPNote",
+]
